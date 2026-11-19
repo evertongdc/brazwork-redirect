@@ -2,17 +2,45 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Brazwork ERP</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Brazwork">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14161a">
+<style>
+  html, body { margin: 0; height: 100%; background: #14161a; }
+  iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #14161a; }
+  #fallback { position: fixed; left: 0; right: 0; bottom: 8px; text-align: center; font: 12px sans-serif; z-index: -1; }
+  #fallback a { color: #FFD500; }
+</style>
 <script>
-  window.location.replace("https://script.google.com/a/macros/brazwork.com/s/AKfycbySI6S_pRe2D_b9g2Bh4FbIEsNbM0DfZtwI68tf1wwXnSSO8i7LNPhjldL667PBWowc1g/exec");
+  var APP = "https://script.google.com/a/macros/brazwork.com/s/AKfycbySI6S_pRe2D_b9g2Bh4FbIEsNbM0DfZtwI68tf1wwXnSSO8i7LNPhjldL667PBWowc1g/exec";
+  var url = APP + (location.search || "");
+  // Celular (ou app instalado): abre o sistema dentro desta página, que carrega o ícone da Brazwork.
+  // Computador: segue direto para o sistema, como antes.
+  var celular = (window.matchMedia && matchMedia("(pointer: coarse)").matches) ||
+                (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ||
+                navigator.standalone === true;
+  if (!celular) { location.replace(url); }
 </script>
 <noscript><meta http-equiv="refresh" content="0; url=https://script.google.com/a/macros/brazwork.com/s/AKfycbySI6S_pRe2D_b9g2Bh4FbIEsNbM0DfZtwI68tf1wwXnSSO8i7LNPhjldL667PBWowc1g/exec"></noscript>
 </head>
 <body>
-  <p>Redirecionando para o sistema...
-    <a href="https://script.google.com/a/macros/brazwork.com/s/AKfycbySI6S_pRe2D_b9g2Bh4FbIEsNbM0DfZtwI68tf1wwXnSSO8i7LNPhjldL667PBWowc1g/exec">
-      Clique aqui se não for redirecionado automaticamente.
-    </a>
-  </p>
+  <div id="fallback"><a id="direto" href="#">Abrir o sistema diretamente</a></div>
+  <script>
+    document.getElementById("direto").href = url;
+    if (celular) {
+      var f = document.createElement("iframe");
+      f.src = url;
+      f.allow = "clipboard-write; camera; microphone";
+      f.title = "Brazwork ERP";
+      document.body.appendChild(f);
+    }
+  </script>
 </body>
 </html>
