@@ -19,11 +19,32 @@
   #fallback a { color: #FFD500; }
 </style>
 <script>
+  // Guarda uma cópia do login do ERP, que roda dentro do iframe. O celular apaga o armazenamento de iframes; esta página não é apagada.
+  // Só aceita mensagens vindas do Google (googleusercontent.com), que é onde o ERP roda, e só devolve o login para quem pediu.
+  window.addEventListener("message", function (e) {
+    var d = e.data;
+    if (!d || d.brz !== 1) return;
+    if (!/^https:\/\/[a-z0-9-]+\.googleusercontent\.com$/.test(e.origin)) return;
+    try {
+      if (d.t === "sess_set" && typeof d.token === "string" && d.token.length > 0 && d.token.length < 500 && d.usuario) {
+        localStorage.setItem("brz_t", d.token);
+        localStorage.setItem("brz_u", JSON.stringify(d.usuario));
+      } else if (d.t === "sess_clear") {
+        localStorage.removeItem("brz_t"); localStorage.removeItem("brz_u");
+      } else if (d.t === "sess_get") {
+        var u = null; try { u = JSON.parse(localStorage.getItem("brz_u") || "null"); } catch (_) {}
+        e.source.postMessage({ brz: 1, t: "sess", token: localStorage.getItem("brz_t") || "", usuario: u }, e.origin);
+      }
+    } catch (_) {}
+  });
+</script>
+<script>
   var APP = "https://script.google.com/a/macros/brazwork.com/s/AKfycbySI6S_pRe2D_b9g2Bh4FbIEsNbM0DfZtwI68tf1wwXnSSO8i7LNPhjldL667PBWowc1g/exec";
   var url = APP + (location.search || "");
   // Celular (ou app instalado): abre o sistema dentro desta página, que carrega o ícone da Brazwork.
   // Computador: segue direto para o sistema, como antes.
-  var celular = (window.matchMedia && matchMedia("(pointer: coarse)").matches) ||
+  var embed = location.search.indexOf("embed=1") > -1;
+  var celular = embed || (window.matchMedia && matchMedia("(pointer: coarse)").matches) ||
                 (window.matchMedia && matchMedia("(display-mode: standalone)").matches) ||
                 navigator.standalone === true;
   if (!celular) { location.replace(url); }
